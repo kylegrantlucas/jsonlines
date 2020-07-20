@@ -43,7 +43,6 @@ func Decode(r io.Reader, ptrToSlice interface{}) error {
 		originalSlice.Set(reflect.Append(originalSlice, ptrToNewObj))
 
 		if err != nil {
-			log.Print(string(item))
 			return err
 		}
 	}
