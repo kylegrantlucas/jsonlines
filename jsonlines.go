@@ -34,6 +34,10 @@ func Decode(r io.Reader, ptrToSlice interface{}) error {
 	scanner := bufio.NewReader(r)
 	for {
 		item, err := scanner.ReadBytes('\n')
+		if err != nil {
+			log.Print(string(item))
+			return err
+		}
 
 		//create new object
 		newObj := reflect.New(slElem).Interface()
@@ -43,13 +47,11 @@ func Decode(r io.Reader, ptrToSlice interface{}) error {
 		originalSlice.Set(reflect.Append(originalSlice, ptrToNewObj))
 
 		if err != nil {
+			log.Print(string(item))
 			return err
 		}
 	}
-
-	return nil
 }
-
 
 // Encode writes the JSON Lines encoding of ptrToSlice to the w stream
 func Encode(w io.Writer, ptrToSlice interface{}) error {
