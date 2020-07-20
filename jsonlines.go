@@ -31,22 +31,23 @@ func Decode(r io.Reader, ptrToSlice interface{}) error {
 	}
 
 	slElem := originalSlice.Type().Elem()
-	//originalSlice := reflect.Indirect(reflect.ValueOf(ptrToSlice))
-	scanner := bufio.NewScanner(r)
-	for scanner.Scan() {
+	scanner := bufio.NewReader(r)
+	for {
+		item, err := scanner.ReadBytes('\n')
+
 		//create new object
 		newObj := reflect.New(slElem).Interface()
- 		item := scanner.Bytes()
- 		err := json.Unmarshal(item, newObj)
- 		if err != nil {
- 			return err
- 		}
- 		ptrToNewObj := reflect.Indirect(reflect.ValueOf(newObj))
+		err = json.Unmarshal(item, newObj)
+
+		ptrToNewObj := reflect.Indirect(reflect.ValueOf(newObj))
 		originalSlice.Set(reflect.Append(originalSlice, ptrToNewObj))
- 	}
- 	if err := scanner.Err(); err != nil {
- 		return err
- 	}
+
+		if err != nil {
+			log.Print(string(item))
+			return err
+		}
+	}
+
 	return nil
 }
 
